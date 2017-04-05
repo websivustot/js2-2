@@ -9,29 +9,58 @@
 <body>
     <input type="text">
     <script>
-        var input = document.querySelector('input'); 
-        input.onchange = function() {
-        var xhr = new XMLHttpRequest();
+        function IsLoginFree(selector) {
+            _this = this;
+            if (typeof selector === 'string') this.input = document.querySelector(selector);
+            else this.input = selector;
+            this.input.setAttribute("placeholder", "Выберите логин");
 
-        xhr.open('GET', 'logins.json', true);
-
-        xhr.send(); // (1)
-
-        xhr.onreadystatechange = function () { // (3)
-            if (xhr.readyState != 4) return;
-
-            //button.innerHTML = 'Готово!';
-
-            if (xhr.status != 200) {
-                alert(xhr.status + ': ' + xhr.statusText);
-            } else {
-                alert(xhr.responseText);
+            this.input.onkeydown = function () {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', 'logins.json', true);
+                xhr.send();
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState != 4) return;
+                    if (xhr.status != 200) {
+                        alert(xhr.status + ': ' + xhr.statusText);
+                    } else {
+                        var logins = JSON.parse(xhr.responseText);
+                        _this.checkLogin = _this.checkNames(logins);
+                        _this.showMessage(_this.checkLogin);
+                    }
+                }
             }
+        }
 
+        IsLoginFree.prototype.checkNames = function (logins) {
+            var answer = false;
+            for (var key in logins) {
+                console.log("input=",this.input.value,logins[key]);
+                if (logins[key] == this.input.value) {
+                    answer = true;
+                }
+                
+            }
+            return answer;
         }
+
+        IsLoginFree.prototype.showMessage = function (checkLogin) {
+            if (document.querySelector('span') == null) {
+                br = document.createElement('br');
+                this.input.parentNode.appendChild(br);
+                message = document.createElement('span');
+                this.input.parentNode.appendChild(message);
+            }
+            if (this.checkLogin) {
+                text = "Такое имя занято!";
+                message.style.color = "red";
+            } else {
+                text = "Логин свободен";
+                message.style.color = "green";
+            }
+            message.innerText = text;
         }
-        //button.innerHTML = 'Загружаю...'; // (2)
-        //button.disabled = true;
+        var x = new IsLoginFree('input');
     </script>
 </body>
 
