@@ -1,7 +1,17 @@
-[
-    "admin",
-    "user",
-    "guest",
-    "alex",
-    "geekbrains"
-]
+{
+    "response1":[
+        "admin",
+        "user",
+        "guest",
+        "alex",
+        "geekbrains"
+    ],
+
+    "response2":[
+        "administrator",
+        "superuser",
+        "newguest",
+        "alexey",
+        "geek"
+    ]
+}
