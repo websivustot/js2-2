@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Lesson2</title>
+    <title>Lesson2.2</title>
 </head>
 
 <body>
@@ -11,39 +11,43 @@
     <script>
         function IsLoginFree(selector) {
             _this = this;
+            var timerRequest;
             if (typeof selector === 'string') this.input = document.querySelector(selector);
             else this.input = selector;
             this.input.setAttribute("placeholder", "Выберите логин");
-            // генерируется случайное число
             randomNumber = Math.floor(Math.random() * 2);
-            console.log(randomNumber);
+            var xhr = new XMLHttpRequest();
             this.input.onkeydown = function () {
-                var xhr = new XMLHttpRequest();
-                xhr.open('GET', 'logins.json', true);
-                xhr.send();
-                xhr.onreadystatechange = function () {
-                    if (xhr.readyState != 4) return;
-                    if (xhr.status != 200) {
-                        alert(xhr.status + ': ' + xhr.statusText);
-                    } else {
-                        var logins = JSON.parse(xhr.responseText);
-                        // получаем объект, состоящий из 2 массивов, один из которых выбирается случайно.
-                        var array = [];
-                        if (randomNumber == 1) array = logins.response1;
-                        else array = logins.response2;
-                        console.log(logins);
-                        console.log(array);
-                        _this.checkLogin = _this.checkNames(array);
-                        _this.showMessage(_this.checkLogin);
-                    }
+                if (timerRequest) {
+                    clearTimeout(timerRequest);
                 }
+                timerRequest = setTimeout(function () {
+                    timerRequest = null;
+                    xhr.open('GET', 'logins.json', true);
+                    xhr.send();
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState != 4) return;
+                        if (xhr.status != 200) {
+                            alert(xhr.status + ': ' + xhr.statusText);
+                        } else {
+                            var logins = JSON.parse(xhr.responseText);
+                            var array = [];
+                            if (randomNumber == 1) {
+                                array = logins.response1;
+                            } else {
+                                array = logins.response2;
+                            }
+                            _this.checkLogin = _this.checkNames(array);
+                            _this.showMessage(_this.checkLogin);
+                        }
+                    }
+                }, 1000);
             }
         }
 
         IsLoginFree.prototype.checkNames = function (logins) {
             var answer = false;
             for (var key in logins) {
-                console.log("input=", this.input.value, logins[key]);
                 if (logins[key] == this.input.value) {
                     answer = true;
                 }
